@@ -2,13 +2,25 @@ module player(
     input wire clk,
     input wire rst,
     input SW0, BtnC, BtnL, BtnR, BtnU, BtnD,
+    input collide_left, collide_right, collide_top, collide_bottom;
 
     output reg [9:0] x,
     output reg [9:0] y,
+    output wire [9:0] nextX,
+    output wire [9:0] nextY,
 
     output wire Qinit, Qidle, Qleft, Qright, Qdown, Qjump,
     output wire Qupleft, Qupright, Qdownleft, Qdownright, Qdeath
 );
+
+reg signed [3:0] vx;
+reg signed [3:0] vy;
+
+
+
+
+localparam X_BOUND = 10'b11111111111;
+localparam Y_BOUND = 10'b11111111111;
 
 //================ STATE =================
 reg [10:0] state;
@@ -37,8 +49,8 @@ reg [10:0] jumpcount, dashcount;
 always @(posedge clk) begin
     if (rst) begin
         state <= INIT;
-        x <= 10;
-        y <= 10;
+        vx <= 0;
+        vy <= 0;
         jumpflag <= 0;
     end
     else begin
@@ -46,8 +58,6 @@ always @(posedge clk) begin
             INIT:
                 begin
                     //actions
-                    x<=0;
-                    y<=0;
                     jumpflag <=0;
                     //rtl
                     state <= IDLE;
@@ -58,8 +68,9 @@ always @(posedge clk) begin
 
                     //gravity code:
 
-                    jumpflag <= 0; //no conditions for now for testing
-
+                    // jumpflag <= 0; //no conditions for now for testing
+                    // vx <= 0;
+                    // vy <= 0;
                     //rtl
                     if(BtnL)begin //debounce these later
                         state <= LEFT;
@@ -90,9 +101,7 @@ always @(posedge clk) begin
             LEFT:
                 begin
                     //
-                    if(x>=0)begin
-                        x<=x-1;
-                    end
+                    vx <= -1;
                     //rtl
                     if(!BtnL)begin
                         state<=IDLE;
@@ -101,9 +110,7 @@ always @(posedge clk) begin
                 end
             RIGHT:
                 begin
-                    if(x<= 0'b11111111111)begin
-                        x<=x+1;
-                    end
+                    vx <= 1;
                     //rtl
                     if(!BtnR)begin
                         state <= IDLE;
@@ -111,30 +118,26 @@ always @(posedge clk) begin
                 end
             DOWN: 
                 begin
-                    if(x>=0)
-                        y <= y+1;
-                    
-                    //rtl
+                    vy <= 1;
                     if(!BtnD)
                         state <= IDLE;
                     
                 end
             JUMP:
                 begin
-                    if(y>=0)begin //debouce eventually
-                        y<= y-20;
+                    if(jumpflag == 0)begin //debouce eventually
+                        vy <= -20;
                         jumpflag <= 1; //cannot jump again until this becomes 0
                     end
                     state <= IDLE;
                 end
             UPLEFT:
                 begin
-                    jumpflag <= 1;
-                    if(y>=0)
-                        y <= y - 20;
-                    if( x>=0)
-                        x <= x - 1;
-                    //rtl
+                    if(jumpflag == 0)begin
+                        vy <= -20;
+                        jumpflag <= 1;;
+                    end
+                    vx <= -1;
                     if(BtnL)
                         state <= LEFT; //keep moving left even after jump if left is still pressed 
                     else
@@ -142,23 +145,20 @@ always @(posedge clk) begin
                 end
             UPRIGHT:
                 begin
-                    jumpflag <= 1;
-                    if(y>=0)
-                        y <= y - 20;
-                    if( x<=0'b11111111111)
-                        x <= x + 1;
-                    //rtl
-                    if(BtnL)
+                    if(jumpflag == 0)begin
+                        vy <= -20;
+                        jumpflag <= 1;;
+                    end
+                    vx <= 1;
+                    if(BtnR)
                         state <= RIGHT; //keep on moving right even post jump until BtnL not pressed
                     else
                         state <= IDLE;
                 end
             DOWNLEFT:
                 begin
-                    if(y<=0'b111111111)
-                        y <= y + 1;
-                    if( x>=0)
-                        x <= x - 1;
+                    vy <= 1;
+                    vx <= -1;
                     if(!BtnD & !BtnL)
                         state <= IDLE;
                     else if (BtnL & !BtnD)
@@ -168,10 +168,8 @@ always @(posedge clk) begin
                 end
             DOWNRIGHT:
                 begin
-                    if(y<= 0'b111111111)
-                        y <= y +1;
-                    if( x<=0'b11111111111)
-                        x <= x + 1;
+                    vy <= 1;
+                    vx <= 1;
                     if(!BtnD & !BtnR)
                         state <= IDLE;
                     else if (BtnR & !BtnD)
@@ -183,6 +181,38 @@ always @(posedge clk) begin
                 begin
                 end
         endcase
+    end
+end
+
+//////////////////////////////////////////////////////////////
+// PHYSICS + COLLISION
+//////////////////////////////////////////////////////////////
+always @(posedge clk) begin
+    if (rst) begin
+        x <= 0;
+        y <= 0;
+    end else begin
+        nextX = x + vx;
+        nextY = y + vy;
+        // ===== GRAVITY =====
+        if (!collide_bottom)
+            vy <= vy + 1;   // falling
+        else
+        begin
+            vy <= 0;        // on ground
+            jumpflag <= 0;
+        end
+        // ===== X MOVEMENT =====
+        if (vx < 0 && !collide_left)
+            x <= x + vx;
+        else if (vx > 0 && !collide_right)
+            x <= x + vx;
+
+        // ===== Y MOVEMENT =====
+        if (vy < 0 && !collide_top)
+            y <= y + vy;
+        else if (vy > 0 && !collide_bottom)
+            y <= y + vy;
     end
 end
 

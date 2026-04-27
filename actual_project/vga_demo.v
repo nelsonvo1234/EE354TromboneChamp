@@ -56,9 +56,18 @@ hvsync_generator syncgen(
 //////////////////////////////////////////////////////////////
 wire [9:0] x;
 wire [9:0] y;
+wire [9:0] nextX;
+wire [9:0] nextY;
+
+wire collide_left, collide_right, collide_top, collide_bottom;
+
 
 wire Qinit, Qidle, Qleft, Qright, Qdown, Qjump;
 wire Qupleft, Qupright, Qdownleft, Qdownright, Qdeath;
+
+wire [5:0] tile_x = CounterX >> 4;
+wire [4:0] tile_y = CounterY >> 4;
+wire tile;
 
 player p1 (
     .clk(player_clk),
@@ -71,12 +80,35 @@ player p1 (
     .BtnD(BtnD),
     .x(x),
     .y(y),
+	.nextX(nextX),
+	.nextY(nextY),
+
+	.collide_left(collide_left),
+	.collide_right(collide_right),
+	.collide_top(collide_top),
+	.collide_bottom(collide_bottom),
 
     .Qinit(Qinit), .Qidle(Qidle), .Qleft(Qleft), .Qright(Qright),
     .Qdown(Qdown), .Qjump(Qjump),
     .Qupleft(Qupleft), .Qupright(Qupright),
     .Qdownleft(Qdownleft), .Qdownright(Qdownright),
     .Qdeath(Qdeath)
+);
+
+// ONE world instance
+world w(
+    // collision interface
+    .x_next(nextX),
+    .y_next(nextY),
+    .collide_left(collide_left),
+    .collide_right(collide_right),
+    .collide_top(collide_top),
+    .collide_bottom(collide_bottom),
+
+    // rendering interface
+    .tile_x(tile_x),
+    .tile_y(tile_y),
+    .tile_out(tile)
 );
 
 //////////////////////////////////////////////////////////////
@@ -86,11 +118,11 @@ wire draw_player =
     (CounterX >= x && CounterX <= x + 20 &&
      CounterY >= y && CounterY <= y + 20);
 
-wire draw_box =
-    (CounterX > 100 && CounterX < 200 && CounterY[5:3] == 3'b111);
 
+
+wire draw_tile = (tile == 2'b01);
 wire R = draw_player;
-wire G = draw_box;
+assign G = {4{draw_tile & inDisplayArea}};
 wire B = 1'b0;
 
 assign vgaRed   = {4{R & inDisplayArea}};

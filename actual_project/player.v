@@ -105,7 +105,7 @@ always @(posedge clk)begin
             DOWN: 
                 begin
                     if(x>=0)
-                        y <= y-1;
+                        y <= y+1;
                     
                     //rtl
                     if(!BtnD)
@@ -115,7 +115,7 @@ always @(posedge clk)begin
             JUMP:
                 begin
                     if(y>=0)begin //debouce eventually
-                        y<= y+20;
+                        y<= y-20;
                         jumpflag <= 1; //cannot jump again until this becomes 0
                     end
                     state <= IDLE;
@@ -124,7 +124,7 @@ always @(posedge clk)begin
                 begin
                     jumpflag <= 1;
                     if(y>=0)
-                        y <= y + 20;
+                        y <= y - 20;
                     if( x>=0)
                         x <= x - 1;
                     //rtl
@@ -137,7 +137,7 @@ always @(posedge clk)begin
                 begin
                     jumpflag <= 1;
                     if(y>=0)
-                        y <= y + 20;
+                        y <= y - 20;
                     if( x<=0'b11111111111)
                         x <= x + 1;
                     //rtl
@@ -149,7 +149,7 @@ always @(posedge clk)begin
             DOWNLEFT:
                 begin
                     if(y<=0'b111111111)
-                        y <= y - 1;
+                        y <= y + 1;
                     if( x>=0)
                         x <= x - 1;
                     if(!BtnD & !BtnL)
@@ -162,7 +162,7 @@ always @(posedge clk)begin
             DOWNRIGHT:
                 begin
                     if(y<= 0'b111111111)
-                        y <= y - 1;
+                        y <= y +1;
                     if( x<=0'b11111111111)
                         x <= x + 1;
                     if(!BtnD & !BtnR)

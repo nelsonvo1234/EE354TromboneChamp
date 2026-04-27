@@ -8,14 +8,15 @@ module player(
     output reg [9:0] x,
     output reg [9:0] y,
     output wire [9:0] nextX,
-    output wire [9:0] nextY
+    output wire [9:0] nextY,
+    output wire facing_left
 );
 
 //////////////////////////////////////////////////////////////
 // PARAMETERS
 //////////////////////////////////////////////////////////////
 localparam signed GRAVITY    = 1;
-localparam signed FAST_FALL  = 3;   // stronger gravity when BtnD
+localparam signed FAST_FALL  = 3;
 localparam signed JUMP_VEL   = -12;
 localparam signed DASH_SPEED = 20;
 
@@ -26,15 +27,19 @@ reg signed [10:0] vx;
 reg signed [10:0] vy;
 
 //////////////////////////////////////////////////////////////
-// DASH FLAG
+// FLAGS
 //////////////////////////////////////////////////////////////
 reg dashflag;
+reg jumpflag;
 
 //////////////////////////////////////////////////////////////
 // NEXT POSITION
 //////////////////////////////////////////////////////////////
 assign nextX = x + vx;
 assign nextY = y + vy;
+
+reg facing_left_reg;
+assign facing_left = facing_left_reg;
 
 //////////////////////////////////////////////////////////////
 // INPUT / CONTROL
@@ -44,6 +49,8 @@ always @(posedge clk) begin
         vx <= 0;
         vy <= 0;
         dashflag <= 0;
+        jumpflag <= 0;
+        facing_left_reg <= 0;  // default facing right
     end else begin
 
         // =======================
@@ -56,11 +63,19 @@ always @(posedge clk) begin
         else
             vx <= 0;
 
+        // update facing direction
+        if (BtnL)
+            facing_left_reg <= 1;
+        else if (BtnR)
+            facing_left_reg <= 0;
+
         // =======================
-        // JUMP
+        // JUMP (single jump per air)
         // =======================
-        if (BtnU && collide_bottom)
+        if (BtnU && !jumpflag && collide_bottom) begin
             vy <= JUMP_VEL;
+            jumpflag <= 1;
+        end
 
         // =======================
         // DASH (ground + air)
@@ -79,9 +94,13 @@ always @(posedge clk) begin
             dashflag <= 1;
         end
 
-        // reset dash on ground
-        if (collide_bottom)
+        // =======================
+        // RESET FLAGS ON GROUND
+        // =======================
+        if (collide_bottom) begin
             dashflag <= 0;
+            jumpflag <= 0;
+        end
     end
 end
 
@@ -99,9 +118,9 @@ always @(posedge clk) begin
         // =======================
         if (!collide_bottom) begin
             if (BtnD && vy > 0)
-                vy <= vy + FAST_FALL;   // fast fall
+                vy <= vy + FAST_FALL;
             else
-                vy <= vy + GRAVITY;     // normal fall
+                vy <= vy + GRAVITY;
         end else begin
             vy <= 0;
         end

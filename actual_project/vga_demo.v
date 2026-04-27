@@ -69,6 +69,8 @@ wire [5:0] tile_x = CounterX >> 4;
 wire [4:0] tile_y = CounterY >> 4;
 wire tile;
 
+wire facing_left;
+
 player p1 (
     .clk(player_clk),
     .rst(reset),
@@ -86,7 +88,8 @@ player p1 (
 	.collide_left(collide_left),
 	.collide_right(collide_right),
 	.collide_top(collide_top),
-	.collide_bottom(collide_bottom)
+	.collide_bottom(collide_bottom),
+	.facing_left(facing_left)
 );
 
 // ONE world instance

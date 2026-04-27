@@ -6,29 +6,36 @@ module player(
     output reg [9:0] x,
     output reg [9:0] y,
 
-    output Qinit, Qidle, Qleft, Qright, Qdown, Qjump, Qupleft, Qupright, Qdownleft, Qdownright, Qdeath;
-)
+    output wire Qinit, Qidle, Qleft, Qright, Qdown, Qjump,
+    output wire Qupleft, Qupright, Qdownleft, Qdownright, Qdeath
+);
+
+//================ STATE =================
 reg [10:0] state;
+
 localparam
-INIT = 11'b00000000001,
-IDLE = 11'b00000000010,
-LEFT = 11'b00000000100,
-RIGHT = 11'b00000001000,
-DOWN = 11'b00000010000,
-JUMP = 11'b00000100000,
-UPLEFT = 11'b00001000000,
-UPRIGHT = 11'b00010000000,
-DOWNLEFT = 11'b00100000000,
-DOWNRIGHT = 11'010000000000,
-DEATH = 11'b10000000000,
-UNK = 11'bXXXXXXXXXXX;
+INIT       = 11'b00000000001,
+IDLE       = 11'b00000000010,
+LEFT       = 11'b00000000100,
+RIGHT      = 11'b00000001000,
+DOWN       = 11'b00000010000,
+JUMP       = 11'b00000100000,
+UPLEFT     = 11'b00001000000,
+UPRIGHT    = 11'b00010000000,
+DOWNLEFT   = 11'b00100000000,
+DOWNRIGHT  = 11'b01000000000, // FIXED (11 bits)
+DEATH      = 11'b10000000000;
 
-assign {Qinit, Qidle, Qleft, Qright, Qdown, Qjump, Qupleft, Qupright, Qdownleft, Qdownright, Qdeath} = state;
+assign {Qinit, Qidle, Qleft, Qright, Qdown, Qjump,
+        Qupleft, Qupright, Qdownleft, Qdownright, Qdeath} = state;
 
-reg jumpflag, dashflag;
-reg [10:0] jumpcount, dashcount; //how long it will jump and dash for
-always @(posedge clk)begin
-    if(rst) begin
+//================ FLAGS =================
+reg jumpflag;
+reg [10:0] jumpcount, dashcount;
+
+//================ FSM =================
+always @(posedge clk) begin
+    if (rst) begin
         state <= INIT;
         x <= 10;
         y <= 10;
@@ -178,4 +185,5 @@ always @(posedge clk)begin
         endcase
     end
 end
+
 endmodule

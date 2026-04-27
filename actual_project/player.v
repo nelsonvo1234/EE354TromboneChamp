@@ -24,7 +24,7 @@ DEATH = 11'b10000000000,
 UNK = 11'bXXXXXXXXXXX;
 
 assign {Qinit, Qidle, Qleft, Qright, Qdown, Qjump, Qupleft, Qupright, Qdownleft, Qdownright, Qdeath} = state;
-
+//next to dos: implement gravity, figure out the diagonal positions
 reg jumpflag, dashflag;
 reg [10:0] jumpcount, dashcount; //how long it will jump and dash for
 always @(posedge clk)begin

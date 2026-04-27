@@ -86,13 +86,7 @@ player p1 (
 	.collide_left(collide_left),
 	.collide_right(collide_right),
 	.collide_top(collide_top),
-	.collide_bottom(collide_bottom),
-
-    .Qinit(Qinit), .Qidle(Qidle), .Qleft(Qleft), .Qright(Qright),
-    .Qdown(Qdown), .Qjump(Qjump),
-    .Qupleft(Qupleft), .Qupright(Qupright),
-    .Qdownleft(Qdownleft), .Qdownright(Qdownright),
-    .Qdeath(Qdeath)
+	.collide_bottom(collide_bottom)
 );
 
 // ONE world instance

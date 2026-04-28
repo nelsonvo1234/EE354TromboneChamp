@@ -4,6 +4,7 @@ module player(
     input BtnC, BtnL, BtnR, BtnU, BtnD,
 
     input collide_left, collide_right, collide_top, collide_bottom,
+    input hit_spike,
 
     output reg [9:0] x,
     output reg [9:0] y,
@@ -49,7 +50,7 @@ assign facing_left = facing_left_reg;
 // INPUT / CONTROL
 //////////////////////////////////////////////////////////////
 always @(posedge clk) begin
-    if (rst) begin
+    if (rst||hit_spike) begin
         vx <= 0;
         dashflag <= 0;
         jumpflag <= 0;

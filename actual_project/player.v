@@ -50,12 +50,14 @@ assign facing_left = facing_left_reg;
 // INPUT / CONTROL
 //////////////////////////////////////////////////////////////
 always @(posedge clk) begin
-    if (rst||hit_spike) begin
-        vx <= 0;
-        dashflag <= 0;
-        jumpflag <= 0;
-        jump_req <= 0;
-        facing_left_reg <= 0;
+if (rst || hit_spike) begin
+    vx <= 0;
+    //vy <= 0;
+    //x  <= 100;
+    //y  <= 100;
+    dashflag <= 0;
+    jumpflag <= 0;
+    jump_req <= 0;
     end else begin
 
         // default

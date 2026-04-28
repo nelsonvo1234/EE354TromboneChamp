@@ -47,7 +47,12 @@ reg [1:0] world_map [0:WORLD_W-1][0:WORLD_H-1];
 
 integer i;
 
+integer j;
+
 initial begin
+    for (i = 0; i < WORLD_W; i = i + 1)
+    for (j = 0; j < WORLD_H; j = j + 1)
+        world_map[i][j] = TILE_EMPTY;
     // layer 1
     for (i = 0; i < 16; i = i + 1) begin
         world_map[i][WORLD_H-1] = TILE_SOLID;  // ground

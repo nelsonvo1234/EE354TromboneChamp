@@ -67,14 +67,13 @@ wire Qupleft, Qupright, Qdownleft, Qdownright, Qdeath;
 
 wire [5:0] tile_x = CounterX >> 4;
 wire [4:0] tile_y = CounterY >> 4;
-wire tile;
+wire [1:0] tile;
 
 wire facing_left;
 
 player p1 (
     .clk(player_clk),
     .rst(reset),
-    .SW0(Sw0),
     .BtnC(BtnC),
     .BtnL(BtnL),
     .BtnR(BtnR),

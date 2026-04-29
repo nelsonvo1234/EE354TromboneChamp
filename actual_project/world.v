@@ -1,10 +1,10 @@
 module world(
     //////////////////////////////////////////////////////////////
-    // COLLISION INTERFACE (player uses this)
+    // COLLISION INTERFACE
     //////////////////////////////////////////////////////////////
     input  [9:0] x_next,
     input  [9:0] y_next,
-    input clk,
+    input  clk,
 
     output collide_left,
     output collide_right,
@@ -14,148 +14,123 @@ module world(
     output collect_berry,
 
     //////////////////////////////////////////////////////////////
-    // RENDER INTERFACE (VGA uses this)
+    // RENDER INTERFACE
     //////////////////////////////////////////////////////////////
     input  [5:0] tile_x,
     input  [4:0] tile_y,
-    output [1:0] tile_out   // tile type (2 bits = extensible)
+    output [1:0] tile_out
 );
 
 //////////////////////////////////////////////////////////////
 // PARAMETERS
 //////////////////////////////////////////////////////////////
 localparam TILE_SIZE = 16;
-localparam WORLD_W = 40;   // 640 / 16
-localparam WORLD_H = 30;   // 480 / 16
-
-localparam PLAYER_W = 16;
-localparam PLAYER_H = 16;
+localparam WORLD_W   = 40;
+localparam WORLD_H   = 30;
+localparam PLAYER_W  = 16;
+localparam PLAYER_H  = 16;
 
 //////////////////////////////////////////////////////////////
 // TILE TYPES
 //////////////////////////////////////////////////////////////
-localparam TILE_EMPTY = 2'b00;
-localparam TILE_SOLID = 2'b01;
-localparam SPIKE = 2'b10;
-localparam STRAWBERRY = 2'b11;
-
+localparam TILE_EMPTY  = 2'b00;
+localparam TILE_SOLID  = 2'b01;
+localparam SPIKE       = 2'b10;
+localparam STRAWBERRY  = 2'b11;
 
 //////////////////////////////////////////////////////////////
 // WORLD MAP
 //////////////////////////////////////////////////////////////
 reg [1:0] world_map [0:WORLD_W-1][0:WORLD_H-1];
-
-integer i;
-
-integer j;
+integer i, j;
 
 initial begin
     for (i = 0; i < WORLD_W; i = i + 1)
         for (j = 0; j < WORLD_H; j = j + 1)
             world_map[i][j] = TILE_EMPTY;
+
     // layer 1
-    for (i = 0; i < 16; i = i + 1) begin
-        world_map[i][WORLD_H-1] = TILE_SOLID;  // ground
-    end
-    for (i=20; i< WORLD_W; i = i +1) begin
+    for (i = 0; i < 16; i = i + 1)
         world_map[i][WORLD_H-1] = TILE_SOLID;
-    end
-    
-    //layer  2
-    for (i= 0; i<12; i = i + 1)begin
-        world_map[i][WORLD_H-2] = TILE_SOLID; //might have to update this if we want different top blocks
-    end
-    world_map[14][WORLD_H-2] = TILE_SOLID; //top tile
-    world_map[15][WORLD_H-2] = TILE_SOLID; //top tile
-    world_map[20][WORLD_H-2] = TILE_SOLID; //top tile
-    world_map[21][WORLD_H-2] = TILE_SOLID; //top tile
-    world_map[22][WORLD_H-2] = TILE_SOLID; //top tile
-    world_map[23][WORLD_H-2] = TILE_SOLID; //top tile
-    world_map[24][WORLD_H-2] = TILE_SOLID; //top tile
-    world_map[25][WORLD_H-2] = TILE_SOLID; //top tile
-    for (i=26; i< WORLD_W; i = i +1) begin
+    for (i = 20; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-1] = TILE_SOLID;
+
+    // layer 2
+    for (i = 0; i < 12; i = i + 1)
         world_map[i][WORLD_H-2] = TILE_SOLID;
-    end
-    //layer 3
-    for (i= 0; i<10; i = i + 1)begin
-        world_map[i][WORLD_H-3] = TILE_SOLID; //might have to update this if we want different top blocks
-    end
-    //top tile
-    for(i=10; i<16; i=i+1)begin
-        world_map[i][WORLD_H-3] = TILE_SOLID; //top tile
-    end
-    for(i=20; i<26; i = i + 1)begin
-         world_map[i][WORLD_H-3] = TILE_SOLID; //top tile
-    end
-    for (i=26; i< WORLD_W; i = i +1) begin
+    world_map[14][WORLD_H-2] = TILE_SOLID;
+    world_map[15][WORLD_H-2] = TILE_SOLID;
+    world_map[20][WORLD_H-2] = TILE_SOLID;
+    world_map[21][WORLD_H-2] = TILE_SOLID;
+    world_map[22][WORLD_H-2] = TILE_SOLID;
+    world_map[23][WORLD_H-2] = TILE_SOLID;
+    world_map[24][WORLD_H-2] = TILE_SOLID;
+    world_map[25][WORLD_H-2] = TILE_SOLID;
+    for (i = 26; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-2] = TILE_SOLID;
+
+    // layer 3
+    for (i = 0; i < 10; i = i + 1)
         world_map[i][WORLD_H-3] = TILE_SOLID;
-    end
-    //layer 4
-    //top tile
-    for (i= 0; i<6; i = i + 1)begin
-        world_map[i][WORLD_H-4] = TILE_SOLID; //might have to update this if we want different top blocks
-    end
-    for(i = 20; i<26; i = i + 1)begin
-        world_map[i][WORLD_H-4] = SPIKE;
-    end
+    for (i = 10; i < 16; i = i + 1)
+        world_map[i][WORLD_H-3] = TILE_SOLID;
+    for (i = 20; i < 26; i = i + 1)
+        world_map[i][WORLD_H-3] = TILE_SOLID;
+    for (i = 26; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-3] = TILE_SOLID;
 
-    for (i=26; i< WORLD_W; i = i +1) begin
+    // layer 4
+    for (i = 0; i < 6; i = i + 1)
         world_map[i][WORLD_H-4] = TILE_SOLID;
-    end
+    for (i = 20; i < 26; i = i + 1)
+        world_map[i][WORLD_H-4] = SPIKE;
+    for (i = 26; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-4] = TILE_SOLID;
 
-    //layer 5
-    for (i=26; i< WORLD_W; i = i +1) begin
-        world_map[i][WORLD_H-5] = TILE_SOLID; 
-    end
+    // layer 5
+    for (i = 26; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-5] = TILE_SOLID;
 
-    //layer 6
-    for (i=26; i< WORLD_W; i = i +1) begin
-        world_map[i][WORLD_H-6] = TILE_SOLID; 
-    end
-    //platform
-    for(i=16; i<20; i = i+1)begin
-        world_map[i][WORLD_H-6] = TILE_SOLID; //top tile
-    end
+    // layer 6
+    for (i = 26; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-6] = TILE_SOLID;
+    for (i = 16; i < 20; i = i + 1)
+        world_map[i][WORLD_H-6] = TILE_SOLID;
     world_map[5][WORLD_H-6] = STRAWBERRY;
-    
-    //layer 7
-    for(i=26; i<WORLD_W; i = i+1)begin
-        world_map[i][WORLD_H-7] = TILE_SOLID; //top tile
-    end
 
-    //layer 9
-    //platform
-    for(i=12; i<17;i = i+1)begin
-        world_map[i][WORLD_H-9]= TILE_SOLID; //top tile
-    end
-    //layer 12
-    for(i = 17; i<23; i = i + 1)begin
-        world_map[i][WORLD_H-12]= TILE_SOLID; //top tile
-    end
-    //layer 15
-    for(i = 23; i<WORLD_W; i = i + 1)begin
-        world_map[i][WORLD_H-15]= TILE_SOLID; //top tile
-    end
-    //layer 16
-    world_map[27][WORLD_H-16] = SPIKE; //spike
-    world_map[28][WORLD_H-16] = SPIKE; //spike
-    
-    
-    
+    // layer 7
+    for (i = 26; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-7] = TILE_SOLID;
+
+    // layer 9
+    for (i = 12; i < 17; i = i + 1)
+        world_map[i][WORLD_H-9] = TILE_SOLID;
+
+    // layer 12
+    for (i = 17; i < 23; i = i + 1)
+        world_map[i][WORLD_H-12] = TILE_SOLID;
+
+    // layer 15
+    for (i = 23; i < WORLD_W; i = i + 1)
+        world_map[i][WORLD_H-15] = TILE_SOLID;
+
+    // layer 16 spikes
+    world_map[27][WORLD_H-16] = SPIKE;
+    world_map[28][WORLD_H-16] = SPIKE;
 end
 
 //////////////////////////////////////////////////////////////
-// SAFE TILE ACCESS FUNCTION
+// TILE QUERY FUNCTIONS
 //////////////////////////////////////////////////////////////
 function is_solid;
     input [5:0] tx;
     input [4:0] ty;
     begin
-        // treat outside world as solid boundary
         if (tx >= WORLD_W || ty >= WORLD_H)
             is_solid = 1;
         else
-            is_solid = (world_map[tx][ty] == TILE_SOLID || world_map[tx][ty] == SPIKE);
+            is_solid = (world_map[tx][ty] == TILE_SOLID ||
+                        world_map[tx][ty] == SPIKE);
     end
 endfunction
 
@@ -169,7 +144,7 @@ function is_spike;
             is_spike = (world_map[tx][ty] == SPIKE);
     end
 endfunction
-    
+
 function is_berry;
     input [5:0] tx;
     input [4:0] ty;
@@ -182,66 +157,103 @@ function is_berry;
 endfunction
 
 //////////////////////////////////////////////////////////////
-// PIXEL → TILE CONVERSION (for player)
+// COLLISION PROBE DESIGN
+//
+// Each face is probed ONE PIXEL OUTSIDE the player bounding box.
+// This is the key insight: a probe that is outside the box on
+// face A cannot possibly be inside the box on face B, so there
+// is zero overlap between any two faces' probe sets.
+//
+// Two probes per face, inset 2px on the cross-axis to avoid
+// the exact corner pixel (which belongs to neither face):
+//
+//          x+2        x+13
+//           |           |
+//    y-1 ---+-----T-----+---   TOP probes (row = y-1)
+//           |           |
+//    y   [==|===========|==]
+//           |  PLAYER   |
+//  x-1  L   |           |   R  x+16
+//           |           |
+//    y+15[==|===========|==]
+//           |           |
+//    y+16---+-----B-----+---   BOTTOM probes (row = y+16)
+//
+// T probes : col = x+2, x+13  row = y-1
+// B probes : col = x+2, x+13  row = y+PLAYER_H   (= y+16)
+// L probes : col = x-1        row = y+2, y+13
+// R probes : col = x+PLAYER_W (= x+16)  row = y+2, y+13
+//
+// Because all pixel coordinates are [9:0] unsigned, subtracting 1
+// when x_next=0 or y_next=0 would underflow to a large number,
+// which the is_solid bounds check (tx >= WORLD_W) catches as
+// out-of-bounds → solid. So screen-edge collision is handled
+// automatically and correctly.
 //////////////////////////////////////////////////////////////
-// wire [5:0] left   = x_next >> 4;  //x position of the tile that the left side player is in
-// wire [5:0] right  = (x_next + PLAYER_W - 1) >> 4; //x pos right
-// wire [4:0] top = y_next >> 4; //y position of the tile thst the top side player is in
-// wire [4:0] bottom    = (y_next + PLAYER_H - 1) >> 4; //
 
+// BOTTOM
+wire [5:0] bot_col_a = (x_next + 2)             >> 4;
+wire [5:0] bot_col_b = (x_next + PLAYER_W - 3)  >> 4;
+wire [4:0] bot_row   = (y_next + PLAYER_H)       >> 4;
 
-// NEW (stable)
-wire [5:0] left   = (x_next + 1) >> 4;
-wire [5:0] right  = (x_next + PLAYER_W - 2) >> 4;
-wire [4:0] top    = (y_next + 1) >> 4;
-wire [4:0] bottom = (y_next + PLAYER_H - 2) >> 4;
+// TOP
+wire [5:0] top_col_a = (x_next + 2)             >> 4;
+wire [5:0] top_col_b = (x_next + PLAYER_W - 3)  >> 4;
+wire [4:0] top_row   = (y_next - 1)              >> 4;
+
+// LEFT
+wire [5:0] left_col   = (x_next - 1)            >> 4;
+wire [4:0] left_row_a = (y_next + 2)            >> 4;
+wire [4:0] left_row_b = (y_next + PLAYER_H - 3) >> 4;
+
+// RIGHT
+wire [5:0] right_col   = (x_next + PLAYER_W)    >> 4;
+wire [4:0] right_row_a = (y_next + 2)           >> 4;
+wire [4:0] right_row_b = (y_next + PLAYER_H - 3)>> 4;
+
 //////////////////////////////////////////////////////////////
-// COLLISION OUTPUTS
+// DIRECTIONAL COLLISION OUTPUTS
 //////////////////////////////////////////////////////////////
-assign collide_left =
-    is_solid(left, bottom) || is_solid(left, top);
-
-assign collide_right =
-    is_solid(right, bottom) || is_solid(right, top);
-
 assign collide_bottom =
-    is_solid(left, bottom) || is_solid(right, bottom);
+    is_solid(bot_col_a, bot_row) ||
+    is_solid(bot_col_b, bot_row);
 
 assign collide_top =
-    is_solid(left, top) || is_solid(right, top);
-    
+    is_solid(top_col_a, top_row) ||
+    is_solid(top_col_b, top_row);
+
+assign collide_left =
+    is_solid(left_col, left_row_a) ||
+    is_solid(left_col, left_row_b);
+
+assign collide_right =
+    is_solid(right_col, right_row_a) ||
+    is_solid(right_col, right_row_b);
+
+//////////////////////////////////////////////////////////////
+// SPIKE / BERRY — four inner corners of the bounding box
+//////////////////////////////////////////////////////////////
+wire [5:0] inner_col_l = (x_next + 1)            >> 4;
+wire [5:0] inner_col_r = (x_next + PLAYER_W - 2) >> 4;
+wire [4:0] inner_row_t = (y_next + 1)            >> 4;
+wire [4:0] inner_row_b = (y_next + PLAYER_H - 2) >> 4;
+
 assign hit_spike =
-    is_spike(left, bottom) ||
-    is_spike(right, bottom) ||
-    is_spike(left, top) ||
-    is_spike(right, top);
-    
+    is_spike(inner_col_l, inner_row_t) ||
+    is_spike(inner_col_r, inner_row_t) ||
+    is_spike(inner_col_l, inner_row_b) ||
+    is_spike(inner_col_r, inner_row_b);
+
 assign collect_berry =
-    is_berry(left, bottom) ||
-    is_berry(right, bottom) ||
-    is_berry(left, top) ||
-    is_berry(right, top);
-//strawberry collision
-// always @(posedge clk) begin
-//     if (collect_berry) begin
-//         // remove berry at all possible contact points
-//         if (left   < WORLD_W && bottom < WORLD_H && world_map[left][bottom] == STRAWBERRY)
-//             world_map[left][bottom] <= TILE_EMPTY;
+    is_berry(inner_col_l, inner_row_t) ||
+    is_berry(inner_col_r, inner_row_t) ||
+    is_berry(inner_col_l, inner_row_b) ||
+    is_berry(inner_col_r, inner_row_b);
 
-//         if (right  < WORLD_W && bottom < WORLD_H && world_map[right][bottom] == STRAWBERRY)
-//             world_map[right][bottom] <= TILE_EMPTY;
-
-//         if (left   < WORLD_W && top < WORLD_H && world_map[left][top] == STRAWBERRY)
-//             world_map[left][top] <= TILE_EMPTY;
-
-//         if (right  < WORLD_W && top < WORLD_H && world_map[right][top] == STRAWBERRY)
-//             world_map[right][top] <= TILE_EMPTY;
-//     end
-// end
 //////////////////////////////////////////////////////////////
 // TILE OUTPUT FOR VGA
 //////////////////////////////////////////////////////////////
-assign tile_out = //how do i fix this for spike?
+assign tile_out =
     (tile_x >= WORLD_W || tile_y >= WORLD_H) ?
         TILE_SOLID :
         world_map[tile_x][tile_y];

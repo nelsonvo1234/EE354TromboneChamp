@@ -22,7 +22,10 @@ module vga_demo(
 //////////////////////////////////////////////////////////////
 wire reset = Sw0;
 reg [27:0] DIV_CLK;
-
+wire [1:0] 	ssdscan_clk;
+	reg [3:0]	SSD;
+	wire [3:0]	SSD3, SSD2, SSD1, SSD0;
+	reg [7:0]  	SSD_CATHODES;
 always @(posedge ClkPort or posedge reset) begin
     if (reset)
         DIV_CLK <= 0;
@@ -150,7 +153,6 @@ assign {Ld11,Ld12,Ld13,Ld14,Ld15} = 0;
 //////////////////////////////////////////////////////////////
 // SSD -> display collides
 //////////////////////////////////////////////////////////////
-<<<<<<< HEAD
 	assign SSD3 = collide_left;
 	assign SSD2 = collide_right;
 	assign SSD1 = collide_top;
@@ -164,20 +166,6 @@ assign An3	=  !((ssdscan_clk[1]) &&  (ssdscan_clk[0]));  // when ssdscan_clk = 1
 
 
 assign {An7, An6, An5, An4} = 4'b1111;
-=======
-	assign SSD3 = collide_left;
-	assign SSD2 = collide_right;
-	assign SSD1 = collide_top;
-	assign SSD0 = collide_bottom;
-assign ssdscan_clk = DIV_CLK[19:18];
-
-assign An0	= !(~(ssdscan_clk[1]) && ~(ssdscan_clk[0]));  // when ssdscan_clk = 00
-assign An1	= !(~(ssdscan_clk[1]) &&  (ssdscan_clk[0]));  // when ssdscan_clk = 01
-assign An2	=  !((ssdscan_clk[1]) && ~(ssdscan_clk[0]));  // when ssdscan_clk = 10
-assign An3	=  !((ssdscan_clk[1]) &&  (ssdscan_clk[0]));  // when ssdscan_clk = 11
-
-assign {An7, An6, An5, An4} = 4'b1111;
->>>>>>> 780899ba8d89713f8773a9fd224ed829da67063f
 assign {Ca,Cb,Cc,Cd,Ce,Cf,Cg,Dp} = 8'hFF;
 
 always @ (ssdscan_clk, SSD0, SSD1, SSD2, SSD3)

@@ -22,12 +22,13 @@ localparam signed JUMP_VEL   = -12;
 localparam signed DASH_SPEED = 20;
 
 //////////////////////////////////////////////////////////////
-// FSM STATES
+// FSM STATES (UPDATED)
 //////////////////////////////////////////////////////////////
-localparam READ  = 1'b0;
-localparam APPLY = 1'b1;
+localparam READ  = 2'b00;
+localparam WAIT  = 2'b01;   // NEW
+localparam APPLY = 2'b10;
 
-reg state;
+reg [1:0] state;
 
 //////////////////////////////////////////////////////////////
 // VELOCITY
@@ -43,7 +44,7 @@ reg jumpflag;
 reg jump_req;
 
 //////////////////////////////////////////////////////////////
-// NEXT POSITION (registered!)
+// NEXT POSITION
 //////////////////////////////////////////////////////////////
 reg [9:0] nextXreg;
 reg [9:0] nextYreg;
@@ -78,13 +79,12 @@ always @(posedge clk) begin
         case (state)
 
         ////////////////////////////////////////////////////////
-        // STATE 0: READ INPUT + COMPUTE NEXT
+        // READ
         ////////////////////////////////////////////////////////
         READ: begin
-
             jump_req <= 0;
 
-            // ---------- HORIZONTAL ----------
+            // HORIZONTAL
             if (BtnL) begin
                 vx <= -2;
                 facing_left_reg <= 1;
@@ -97,13 +97,13 @@ always @(posedge clk) begin
                 vx <= 0;
             end
 
-            // ---------- JUMP ----------
+            // JUMP
             if (BtnU && !jumpflag && collide_bottom) begin
                 jump_req <= 1;
                 jumpflag <= 1;
             end
 
-            // ---------- DASH ----------
+            // DASH
             if (BtnC && !dashflag) begin
                 if (BtnL)
                     vx <= -DASH_SPEED;
@@ -115,7 +115,7 @@ always @(posedge clk) begin
                 dashflag <= 1;
             end
 
-            // ---------- GRAVITY ----------
+            // GRAVITY
             if (jump_req) begin
                 vy <= JUMP_VEL;
             end else begin
@@ -132,37 +132,36 @@ always @(posedge clk) begin
                 end
             end
 
-            // ---------- COMPUTE NEXT ----------
+            // COMPUTE NEXT
             nextXreg <= x + vx;
             nextYreg <= y + vy;
 
+            state <= WAIT;   // <-- KEY FIX
+        end
+
+        ////////////////////////////////////////////////////////
+        // WAIT (NEW)
+        ////////////////////////////////////////////////////////
+        WAIT: begin
             state <= APPLY;
         end
 
         ////////////////////////////////////////////////////////
-        // STATE 1: APPLY MOVEMENT USING COLLISIONS
+        // APPLY
         ////////////////////////////////////////////////////////
         APPLY: begin
 
-            // ---------- X ----------
-            if (vx < 0) begin
-                if (!collide_left)
-                    x <= nextXreg;
-            end
-            else if (vx > 0) begin
-                if (!collide_right)
-                    x <= nextXreg;
-            end
+            // X movement
+            if (vx < 0 && !collide_left)
+                x <= nextXreg;
+            else if (vx > 0 && !collide_right)
+                x <= nextXreg;
 
-            // ---------- Y ----------
-            if (vy < 0) begin
-                if (!collide_top)
-                    y <= nextYreg;
-            end
-            else if (vy > 0) begin
-                if (!collide_bottom)
-                    y <= nextYreg;
-            end
+            // Y movement
+            if (vy < 0 && !collide_top)
+                y <= nextYreg;
+            else if (vy > 0 && !collide_bottom)
+                y <= nextYreg;
 
             state <= READ;
         end

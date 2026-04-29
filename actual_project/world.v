@@ -184,11 +184,17 @@ endfunction
 //////////////////////////////////////////////////////////////
 // PIXEL → TILE CONVERSION (for player)
 //////////////////////////////////////////////////////////////
-wire [5:0] left   = x_next >> 4;  //x position of the tile that the left side player is in
-wire [5:0] right  = (x_next + PLAYER_W - 1) >> 4; //x pos right
-wire [4:0] top = y_next >> 4; //y position of the tile thst the top side player is in
-wire [4:0] bottom    = (y_next + PLAYER_H - 1) >> 4; //
+// wire [5:0] left   = x_next >> 4;  //x position of the tile that the left side player is in
+// wire [5:0] right  = (x_next + PLAYER_W - 1) >> 4; //x pos right
+// wire [4:0] top = y_next >> 4; //y position of the tile thst the top side player is in
+// wire [4:0] bottom    = (y_next + PLAYER_H - 1) >> 4; //
 
+
+// NEW (stable)
+wire [5:0] left   = (x_next + 1) >> 4;
+wire [5:0] right  = (x_next + PLAYER_W - 2) >> 4;
+wire [4:0] top    = (y_next + 1) >> 4;
+wire [4:0] bottom = (y_next + PLAYER_H - 2) >> 4;
 //////////////////////////////////////////////////////////////
 // COLLISION OUTPUTS
 //////////////////////////////////////////////////////////////

@@ -68,6 +68,10 @@ wire [1:0] tile;
 
 wire facing_left;
 
+wire [9:0] left_o, right_o, top_o, bottom_o;
+
+wire [1:0] tile_o;
+
 player p1 (
     .clk(player_clk),
     .rst(reset),
@@ -89,8 +93,8 @@ player p1 (
 );
 
 world w (
-    .x_next(nextX),
-    .y_next(nextY),
+    .nextX(nextX),
+    .nextY(nextY),
     .clk(clk),
     .collide_left(collide_left),
     .collide_right(collide_right),
@@ -100,57 +104,39 @@ world w (
     .collect_berry(collect_berry),
     .tile_x(tile_x),
     .tile_y(tile_y),
-    .tile_out(tile)
+    .tile_out(tile),
+    .left_o(left_o),
+    .right_o(right_o),
+    .top_o(top_o),
+    .bottom_o(bottom_o),
+    .tile_o(tile_o)
 );
 
 //////////////////////////////////////////////////////////////
-// VGA DRAWING + REAL-TIME PROBE VISUALIZATION
+// VGA DRAWING
 //////////////////////////////////////////////////////////////
-
-// Identify the tile types for the current pixel being drawn
-wire is_solid_tile = (tile == 2'b01);
-wire is_spike_tile = (tile == 2'b10);
-wire is_berry_tile = (tile == 2'b11);
-
-// --- COLLISION PROBE VISUALIZATION ---
-// We calculate which tiles the 'world' module is currently probing.
-// If the VGA scan (tile_x, tile_y) matches these, we will highlight them.
-
-wire [5:0] p_tx_l = (nextX - 1) >> 4;               // Left Probe Column
-wire [5:0] p_tx_r = (nextX + 16) >> 4;              // Right Probe Column
-wire [4:0] p_ty_t = (nextY - 1) >> 4;               // Top Probe Row
-wire [4:0] p_ty_b = (nextY + 16) >> 4;              // Bottom Probe Row
-
-// This wire is true if the current tile being drawn is one the player is "feeling"
-wire is_probed_tile = (tile_x == p_tx_l || tile_x == p_tx_r || 
-                       tile_y == p_ty_t || tile_y == p_ty_b) &&
-                      (tile_x >= (nextX >> 4) - 1 && tile_x <= (nextX >> 4) + 1) &&
-                      (tile_y >= (nextY >> 4) - 1 && tile_y <= (nextY >> 4) + 1);
+wire is_solid = (tile == 2'b01);
+wire is_spike = (tile == 2'b10);
+wire is_berry = (tile == 2'b11);
 
 wire draw_player =
-    (CounterX >= x && CounterX < x + 16 && // Using PLAYER_W=16 from your world module
+    (CounterX >= x && CounterX < x + 16 &&
      CounterY >= y && CounterY < y + 16);
 
-// COLOR MAPPING
-// Player: White
-// Active Probed Tile: Blue (even if empty)
-// Probed Solid Tile: Cyan (Blue + Green)
-// Spikes: Red
-// Berries: Yellow (Red + Green)
+wire nextPos =     (CounterX >= nextX && CounterX < nextX + 15 &&
+     CounterY >= nextY && CounterY < nextY + 15);
 
 wire [3:0] r =
-    draw_player    ? 4'b1111 :
-    is_spike_tile  ? 4'b1111 :
-    is_berry_tile  ? 4'b1111 : 4'b0000;
+    draw_player ? 4'b1111 :
+    is_berry    ? 4'b1111 :
+    is_spike    ? 4'b1111 : 4'b0000;
 
 wire [3:0] g =
-    draw_player    ? 4'b1111 :
-    is_berry_tile  ? 4'b1111 :
-    is_solid_tile  ? 4'b1111 : 4'b0000;
+    draw_player ? 4'b0000 :
+    is_berry    ? 4'b1111 :
+    is_solid    ? 4'b1111 : 4'b0000;
 
-wire [3:0] b = 
-    draw_player    ? 4'b1111 :
-    is_probed_tile ? 4'b1111 : 4'b0000; // Blue highlight for probed areas
+wire [3:0] b = nextPos ? 4'b1111 : 4'b0000;
 
 assign vgaRed   = r & {4{inDisplayArea}};
 assign vgaGreen = g & {4{inDisplayArea}};
@@ -174,15 +160,17 @@ assign {Ld0,Ld1,Ld2,Ld3,Ld4,Ld5,Ld6} =
        {Sw0,Sw1,BtnU,BtnD,BtnL,BtnR,BtnC};
 assign {Ld7, Ld8, Ld9, Ld10} = {collide_left, collide_right, collide_bottom, collide_top};
 
-assign {Ld11,Ld12,Ld13,Ld14,Ld15} = 0;
+assign {Ld11, Ld12} = {tile_o[0], tile_o[1]};
+
+assign {Ld13,Ld14,Ld15} = 0;
 
 //////////////////////////////////////////////////////////////
 // SSD -> display collides
 //////////////////////////////////////////////////////////////
-	assign SSD3 = collide_left;
-	assign SSD2 = collide_right;
-	assign SSD1 = collide_top;
-	assign SSD0 = collide_bottom;
+	assign SSD3 = left_o >> 4;
+	assign SSD2 = left_o;
+	assign SSD1 = top_o >> 4;
+	assign SSD0 = top_o;
 assign ssdscan_clk = DIV_CLK[19:18];
 
 assign An0	= !(~(ssdscan_clk[1]) && ~(ssdscan_clk[0]));  // when ssdscan_clk = 00
@@ -192,7 +180,6 @@ assign An3	=  !((ssdscan_clk[1]) &&  (ssdscan_clk[0]));  // when ssdscan_clk = 1
 
 
 assign {An7, An6, An5, An4} = 4'b1111;
-assign {Ca,Cb,Cc,Cd,Ce,Cf,Cg,Dp} = 8'hFF;
 
 always @ (ssdscan_clk, SSD0, SSD1, SSD2, SSD3)
 begin : SSD_SCAN_OUT

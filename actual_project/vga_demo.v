@@ -104,27 +104,53 @@ world w (
 );
 
 //////////////////////////////////////////////////////////////
-// VGA DRAWING
+// VGA DRAWING + REAL-TIME PROBE VISUALIZATION
 //////////////////////////////////////////////////////////////
-wire is_solid = (tile == 2'b01);
-wire is_spike = (tile == 2'b10);
-wire is_berry = (tile == 2'b11);
+
+// Identify the tile types for the current pixel being drawn
+wire is_solid_tile = (tile == 2'b01);
+wire is_spike_tile = (tile == 2'b10);
+wire is_berry_tile = (tile == 2'b11);
+
+// --- COLLISION PROBE VISUALIZATION ---
+// We calculate which tiles the 'world' module is currently probing.
+// If the VGA scan (tile_x, tile_y) matches these, we will highlight them.
+
+wire [5:0] p_tx_l = (nextX - 1) >> 4;               // Left Probe Column
+wire [5:0] p_tx_r = (nextX + 16) >> 4;              // Right Probe Column
+wire [4:0] p_ty_t = (nextY - 1) >> 4;               // Top Probe Row
+wire [4:0] p_ty_b = (nextY + 16) >> 4;              // Bottom Probe Row
+
+// This wire is true if the current tile being drawn is one the player is "feeling"
+wire is_probed_tile = (tile_x == p_tx_l || tile_x == p_tx_r || 
+                       tile_y == p_ty_t || tile_y == p_ty_b) &&
+                      (tile_x >= (nextX >> 4) - 1 && tile_x <= (nextX >> 4) + 1) &&
+                      (tile_y >= (nextY >> 4) - 1 && tile_y <= (nextY >> 4) + 1);
 
 wire draw_player =
-    (CounterX >= x && CounterX < x + 20 &&
-     CounterY >= y && CounterY < y + 20);
+    (CounterX >= x && CounterX < x + 16 && // Using PLAYER_W=16 from your world module
+     CounterY >= y && CounterY < y + 16);
+
+// COLOR MAPPING
+// Player: White
+// Active Probed Tile: Blue (even if empty)
+// Probed Solid Tile: Cyan (Blue + Green)
+// Spikes: Red
+// Berries: Yellow (Red + Green)
 
 wire [3:0] r =
-    draw_player ? 4'b1111 :
-    is_berry    ? 4'b1111 :
-    is_spike    ? 4'b1111 : 4'b0000;
+    draw_player    ? 4'b1111 :
+    is_spike_tile  ? 4'b1111 :
+    is_berry_tile  ? 4'b1111 : 4'b0000;
 
 wire [3:0] g =
-    draw_player ? 4'b0000 :
-    is_berry    ? 4'b1111 :
-    is_solid    ? 4'b1111 : 4'b0000;
+    draw_player    ? 4'b1111 :
+    is_berry_tile  ? 4'b1111 :
+    is_solid_tile  ? 4'b1111 : 4'b0000;
 
-wire [3:0] b = 4'b0000;
+wire [3:0] b = 
+    draw_player    ? 4'b1111 :
+    is_probed_tile ? 4'b1111 : 4'b0000; // Blue highlight for probed areas
 
 assign vgaRed   = r & {4{inDisplayArea}};
 assign vgaGreen = g & {4{inDisplayArea}};

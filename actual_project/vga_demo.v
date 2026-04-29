@@ -31,7 +31,7 @@ always @(posedge ClkPort or posedge reset) begin
 end
 
 wire clk = DIV_CLK[1];
-wire player_clk = DIV_CLK[20];
+wire player_clk = DIV_CLK[19];
 
 //////////////////////////////////////////////////////////////
 // VGA SYNC
@@ -147,7 +147,7 @@ assign {Ld0,Ld1,Ld2,Ld3,Ld4,Ld5,Ld6} =
 assign {Ld7,Ld8,Ld9,Ld10,Ld11,Ld12,Ld13,Ld14,Ld15} = 0;
 
 //////////////////////////////////////////////////////////////
-// SSD OFF
+// SSD -> display collides
 //////////////////////////////////////////////////////////////
 assign {An0,An1,An2,An3,An4,An5,An6,An7} = 8'hFF;
 assign {Ca,Cb,Cc,Cd,Ce,Cf,Cg,Dp} = 8'hFF;

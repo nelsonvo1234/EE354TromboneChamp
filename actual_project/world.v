@@ -28,8 +28,8 @@ localparam TILE_SIZE = 16;
 localparam WORLD_W = 40;   // 640 / 16
 localparam WORLD_H = 30;   // 480 / 16
 
-localparam PLAYER_W = 20;
-localparam PLAYER_H = 20;
+localparam PLAYER_W = 16;
+localparam PLAYER_H = 16;
 
 //////////////////////////////////////////////////////////////
 // TILE TYPES
@@ -51,8 +51,8 @@ integer j;
 
 initial begin
     for (i = 0; i < WORLD_W; i = i + 1)
-    for (j = 0; j < WORLD_H; j = j + 1)
-        world_map[i][j] = TILE_EMPTY;
+        for (j = 0; j < WORLD_H; j = j + 1)
+            world_map[i][j] = TILE_EMPTY;
     // layer 1
     for (i = 0; i < 16; i = i + 1) begin
         world_map[i][WORLD_H-1] = TILE_SOLID;  // ground
@@ -169,12 +169,6 @@ function is_spike;
             is_spike = (world_map[tx][ty] == SPIKE);
     end
 endfunction
-
-assign hit_spike =
-    is_spike(left, bottom) ||
-    is_spike(right, bottom) ||
-    is_spike(left, top) ||
-    is_spike(right, top);
     
 function is_berry;
     input [5:0] tx;
@@ -186,19 +180,14 @@ function is_berry;
             is_berry = (world_map[tx][ty] == STRAWBERRY);
     end
 endfunction
-assign collect_berry =
-    is_berry(left, bottom) ||
-    is_berry(right, bottom) ||
-    is_berry(left, top) ||
-    is_berry(right, top);
 
 //////////////////////////////////////////////////////////////
 // PIXEL → TILE CONVERSION (for player)
 //////////////////////////////////////////////////////////////
-wire [5:0] left   = x_next >> 4;
-wire [5:0] right  = (x_next + PLAYER_W - 1) >> 4;
-wire [4:0] top = y_next >> 4;
-wire [4:0] bottom    = (y_next + PLAYER_H - 1) >> 4;
+wire [5:0] left   = x_next >> 4;  //x position of the tile that the left side player is in
+wire [5:0] right  = (x_next + PLAYER_W - 1) >> 4; //x pos right
+wire [4:0] top = y_next >> 4; //y position of the tile thst the top side player is in
+wire [4:0] bottom    = (y_next + PLAYER_H - 1) >> 4; //
 
 //////////////////////////////////////////////////////////////
 // COLLISION OUTPUTS
@@ -214,23 +203,35 @@ assign collide_bottom =
 
 assign collide_top =
     is_solid(left, top) || is_solid(right, top);
+    
+assign hit_spike =
+    is_spike(left, bottom) ||
+    is_spike(right, bottom) ||
+    is_spike(left, top) ||
+    is_spike(right, top);
+    
+assign collect_berry =
+    is_berry(left, bottom) ||
+    is_berry(right, bottom) ||
+    is_berry(left, top) ||
+    is_berry(right, top);
 //strawberry collision
-always @(posedge clk) begin
-    if (collect_berry) begin
-        // remove berry at all possible contact points
-        if (left   < WORLD_W && bottom < WORLD_H && world_map[left][bottom] == STRAWBERRY)
-            world_map[left][bottom] <= TILE_EMPTY;
+// always @(posedge clk) begin
+//     if (collect_berry) begin
+//         // remove berry at all possible contact points
+//         if (left   < WORLD_W && bottom < WORLD_H && world_map[left][bottom] == STRAWBERRY)
+//             world_map[left][bottom] <= TILE_EMPTY;
 
-        if (right  < WORLD_W && bottom < WORLD_H && world_map[right][bottom] == STRAWBERRY)
-            world_map[right][bottom] <= TILE_EMPTY;
+//         if (right  < WORLD_W && bottom < WORLD_H && world_map[right][bottom] == STRAWBERRY)
+//             world_map[right][bottom] <= TILE_EMPTY;
 
-        if (left   < WORLD_W && top < WORLD_H && world_map[left][top] == STRAWBERRY)
-            world_map[left][top] <= TILE_EMPTY;
+//         if (left   < WORLD_W && top < WORLD_H && world_map[left][top] == STRAWBERRY)
+//             world_map[left][top] <= TILE_EMPTY;
 
-        if (right  < WORLD_W && top < WORLD_H && world_map[right][top] == STRAWBERRY)
-            world_map[right][top] <= TILE_EMPTY;
-    end
-end
+//         if (right  < WORLD_W && top < WORLD_H && world_map[right][top] == STRAWBERRY)
+//             world_map[right][top] <= TILE_EMPTY;
+//     end
+// end
 //////////////////////////////////////////////////////////////
 // TILE OUTPUT FOR VGA
 //////////////////////////////////////////////////////////////

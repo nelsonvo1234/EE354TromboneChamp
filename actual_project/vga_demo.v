@@ -161,6 +161,7 @@ assign An1	= !(~(ssdscan_clk[1]) &&  (ssdscan_clk[0]));  // when ssdscan_clk = 0
 assign An2	=  !((ssdscan_clk[1]) && ~(ssdscan_clk[0]));  // when ssdscan_clk = 10
 assign An3	=  !((ssdscan_clk[1]) &&  (ssdscan_clk[0]));  // when ssdscan_clk = 11
 
+
 assign {An7, An6, An5, An4} = 4'b1111;
 assign {Ca,Cb,Cc,Cd,Ce,Cf,Cg,Dp} = 8'hFF;
 

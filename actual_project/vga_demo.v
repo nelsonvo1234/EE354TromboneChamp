@@ -146,7 +146,7 @@ end
 //////////////////////////////////////////////////////////////
 assign {Ld0,Ld1,Ld2,Ld3,Ld4,Ld5,Ld6} =
        {Sw0,Sw1,BtnU,BtnD,BtnL,BtnR,BtnC};
-assign {Ld7, Ld8, Ld9, Ld10} = {collide_left, collide_right, collide_bottom, collide_up};
+assign {Ld7, Ld8, Ld9, Ld10} = {collide_left, collide_right, collide_bottom, collide_top};
 
 assign {Ld11,Ld12,Ld13,Ld14,Ld15} = 0;
 

@@ -1,0 +1,9 @@
+0.7
+2020.2
+Nov 18 2020
+09:47:47
+C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/hvsync_generator.v,1777312047,verilog,,C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/player.v,,hvsync_generator,,,,,,,,
+C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/player.v,1777499299,verilog,,C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/world.v,,player,,,,,,,,
+C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v,1777498556,verilog,,C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/hvsync_generator.v,,madeline_idle_rom;run_slow_rom;spike_sprite_rom;strawberry_rom,,,,,,,,
+C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/vga_demo.v,1777499337,verilog,,,,vga_demo,,,,,,,,
+C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/world.v,1777499726,verilog,,C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/vga_demo.v,,world,,,,,,,,

@@ -1,0 +1,289 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Wed Apr 29 14:49:13 2026
+# Process ID: 41532
+# Current directory: C:/Users/nelso/Documents/Programs/EE354TromboneChamp
+# Command line: vivado.exe -mode batch -source scripts\synth_check.tcl
+# Log file: C:/Users/nelso/Documents/Programs/EE354TromboneChamp/vivado.log
+# Journal file: C:/Users/nelso/Documents/Programs/EE354TromboneChamp\vivado.jou
+#-----------------------------------------------------------
+CRITICAL WARNING: [Common 17-741] No write access right to the local Tcl store at 'C'. XilinxTclStore is reverted to the installation area. If you want to use local Tcl Store, please change the access right and relaunch Vivado.
+source {scripts\synth_check.tcl}
+# read_verilog actual_project/sprite_roms.v
+# read_verilog actual_project/hvsync_generator.v
+# read_verilog actual_project/player.v
+# read_verilog actual_project/world.v
+# read_verilog actual_project/vga_demo.v
+# synth_design -top vga_demo -part xc7a100tcsg324-1
+Command: synth_design -top vga_demo -part xc7a100tcsg324-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 39676
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:03 ; elapsed = 00:00:03 . Memory (MB): peak = 1108.191 ; gain = 0.000
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'vga_demo' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/vga_demo.v:3]
+INFO: [Synth 8-6157] synthesizing module 'hvsync_generator' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/hvsync_generator.v:13]
+INFO: [Synth 8-6155] done synthesizing module 'hvsync_generator' (1#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/hvsync_generator.v:13]
+INFO: [Synth 8-6157] synthesizing module 'player' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/player.v:1]
+	Parameter GRAVITY bound to: 32'sb00000000000000000000000000000001 
+	Parameter FAST_FALL bound to: 32'sb00000000000000000000000000000011 
+	Parameter JUMP_VEL bound to: 32'sb11111111111111111111111111110100 
+	Parameter DASH_SPEED bound to: 32'sb00000000000000000000000000010100 
+	Parameter DASH_DIAG bound to: 32'sb00000000000000000000000000001110 
+	Parameter READ bound to: 1'b0 
+	Parameter APPLY bound to: 1'b1 
+INFO: [Synth 8-6155] done synthesizing module 'player' (2#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/player.v:1]
+INFO: [Synth 8-6157] synthesizing module 'world' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/world.v:1]
+	Parameter TILE_SIZE bound to: 16 - type: integer 
+	Parameter WORLD_W bound to: 40 - type: integer 
+	Parameter WORLD_H bound to: 30 - type: integer 
+	Parameter PLAYER_W bound to: 16 - type: integer 
+	Parameter PLAYER_H bound to: 16 - type: integer 
+	Parameter TILE_EMPTY bound to: 2'b00 
+	Parameter TILE_SOLID bound to: 2'b01 
+	Parameter SPIKE bound to: 2'b10 
+	Parameter STRAWBERRY bound to: 2'b11 
+	Parameter BERRY_COUNT bound to: 3 - type: integer 
+	Parameter BERRY0_X bound to: 6'b000101 
+	Parameter BERRY0_Y bound to: 5'b11000 
+	Parameter BERRY1_X bound to: 6'b010010 
+	Parameter BERRY1_Y bound to: 5'b10001 
+	Parameter BERRY2_X bound to: 6'b011110 
+	Parameter BERRY2_Y bound to: 5'b01101 
+	Parameter BERRIES_READY bound to: 1'b0 
+	Parameter BERRIES_UPDATE bound to: 1'b1 
+INFO: [Synth 8-6155] done synthesizing module 'world' (3#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/world.v:1]
+INFO: [Synth 8-6157] synthesizing module 'madeline_idle_rom' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:4]
+INFO: [Synth 8-6155] done synthesizing module 'madeline_idle_rom' (4#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:4]
+INFO: [Synth 8-6157] synthesizing module 'run_slow_rom' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:1817]
+INFO: [Synth 8-6155] done synthesizing module 'run_slow_rom' (5#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:1817]
+INFO: [Synth 8-6157] synthesizing module 'strawberry_rom' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:4910]
+INFO: [Synth 8-6155] done synthesizing module 'strawberry_rom' (6#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:4910]
+INFO: [Synth 8-6157] synthesizing module 'spike_sprite_rom' [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:6723]
+INFO: [Synth 8-6155] done synthesizing module 'spike_sprite_rom' (7#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v:6723]
+INFO: [Synth 8-226] default block is never used [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/vga_demo.v:316]
+INFO: [Synth 8-6155] done synthesizing module 'vga_demo' (8#1) [C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/vga_demo.v:3]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 1108.191 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 1108.191 ; gain = 0.000
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a100tcsg324-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 1108.191 ; gain = 0.000
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7a100tcsg324-1
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1108.191 ; gain = 0.000
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   32 Bit       Adders := 6     
+	   2 Input   28 Bit       Adders := 1     
+	   2 Input   11 Bit       Adders := 7     
+	   3 Input   11 Bit       Adders := 2     
+	   2 Input   10 Bit       Adders := 8     
+	   3 Input   10 Bit       Adders := 4     
+	   2 Input    9 Bit       Adders := 6     
+	   3 Input    8 Bit       Adders := 1     
+	   2 Input    8 Bit       Adders := 1     
+	   3 Input    6 Bit       Adders := 1     
+	   2 Input    4 Bit       Adders := 1     
+	   2 Input    3 Bit       Adders := 1     
++---XORs : 
+	   3 Input      6 Bit         XORs := 1     
++---Registers : 
+	               28 Bit    Registers := 1     
+	               11 Bit    Registers := 2     
+	               10 Bit    Registers := 6     
+	                8 Bit    Registers := 1     
+	                3 Bit    Registers := 1     
+	                1 Bit    Registers := 10    
++---Muxes : 
+	   2 Input   28 Bit        Muxes := 2     
+	 257 Input   13 Bit        Muxes := 1     
+	   4 Input   12 Bit        Muxes := 1     
+	   2 Input   12 Bit        Muxes := 1     
+	   2 Input   11 Bit        Muxes := 4     
+	   4 Input   11 Bit        Muxes := 1     
+	   7 Input   11 Bit        Muxes := 1     
+	   2 Input    9 Bit        Muxes := 2     
+	   3 Input    9 Bit        Muxes := 2     
+	   2 Input    8 Bit        Muxes := 1     
+	   2 Input    7 Bit        Muxes := 1     
+	   6 Input    6 Bit        Muxes := 1     
+	   2 Input    6 Bit        Muxes := 1     
+	   2 Input    4 Bit        Muxes := 4     
+	   2 Input    3 Bit        Muxes := 13    
+	   2 Input    2 Bit        Muxes := 15    
+	  12 Input    2 Bit        Muxes := 2     
+	   2 Input    1 Bit        Muxes := 126   
+	   8 Input    1 Bit        Muxes := 1     
+	  12 Input    1 Bit        Muxes := 40    
+	   3 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 240 (col length:80)
+BRAMs: 270 (col length: RAMB18 80 RAMB36 40)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:25 ; elapsed = 00:00:26 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+ROM: Preliminary Mapping	Report
++------------------+------------+---------------+----------------+
+|Module Name       | RTL Object | Depth x Width | Implemented As | 
++------------------+------------+---------------+----------------+
+|madeline_idle_rom | p_0_out    | 2048x13       | LUT            | 
+|run_slow_rom      | p_0_out    | 4096x13       | LUT            | 
+|strawberry_rom    | p_0_out    | 2048x13       | LUT            | 
+|madeline_idle_rom | p_0_out    | 2048x13       | LUT            | 
+|run_slow_rom      | p_0_out    | 4096x13       | LUT            | 
+|strawberry_rom    | p_0_out    | 2048x13       | LUT            | 
++------------------+------------+---------------+----------------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:26 ; elapsed = 00:00:27 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |BUFG   |     3|
+|2     |CARRY4 |    45|
+|3     |LUT1   |     5|
+|4     |LUT2   |    97|
+|5     |LUT3   |    81|
+|6     |LUT4   |   122|
+|7     |LUT5   |   184|
+|8     |LUT6   |   485|
+|9     |MUXF7  |    18|
+|10    |FDCE   |    76|
+|11    |FDRE   |    79|
+|12    |FDSE   |    12|
+|13    |IBUF   |     8|
+|14    |OBUF   |    47|
++------+-------+------+
+
+Report Instance Areas: 
++------+------------+------------------+------+
+|      |Instance    |Module            |Cells |
++------+------------+------------------+------+
+|1     |top         |                  |  1262|
+|2     |  berry_rom |strawberry_rom    |    45|
+|3     |  idle_rom  |madeline_idle_rom |    51|
+|4     |  p1        |player            |   607|
+|5     |  run_rom   |run_slow_rom      |    37|
+|6     |  syncgen   |hvsync_generator  |   280|
+|7     |  w         |world             |    65|
++------+------------+------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 0 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:28 ; elapsed = 00:00:29 . Memory (MB): peak = 1278.457 ; gain = 170.266
+error deleting "C:/Users/nelso/Documents/Programs/EE354TromboneChamp/.Xil/Vivado-41532-LAPTOP-OKI2J1R7/realtime/tmp": no such file or directory
+INFO: [Common 17-83] Releasing license: Synthesis
+23 Infos, 0 Warnings, 0 Critical Warnings and 1 Errors encountered.
+synth_design failed
+ERROR: [Common 17-69] Command failed: Vivado Synthesis failed
+INFO: [Common 17-206] Exiting Vivado at Wed Apr 29 14:49:48 2026...

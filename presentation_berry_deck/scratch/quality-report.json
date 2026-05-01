@@ -1,0 +1,14 @@
+{
+  "workspace": "C:\\Users\\nelso\\Documents\\Programs\\EE354TromboneChamp\\presentation_berry_deck",
+  "pptx": "C:\\Users\\nelso\\Documents\\Programs\\EE354TromboneChamp\\presentation_berry_deck\\output\\berry-system-deck.pptx",
+  "checks": {
+    "output_hygiene": {
+      "output_dir": "C:\\Users\\nelso\\Documents\\Programs\\EE354TromboneChamp\\presentation_berry_deck\\output",
+      "unexpected_files": []
+    }
+  },
+  "failures": [
+    "PPTX package inspection failed: unzip -Z1 C:\\Users\\nelso\\Documents\\Programs\\EE354TromboneChamp\\presentation_berry_deck\\output\\berry-system-deck.pptx failed"
+  ],
+  "warnings": []
+}

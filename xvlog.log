@@ -1,0 +1,13 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/sprite_roms.v" into library work
+INFO: [VRFC 10-311] analyzing module madeline_idle_rom
+INFO: [VRFC 10-311] analyzing module run_slow_rom
+INFO: [VRFC 10-311] analyzing module strawberry_rom
+INFO: [VRFC 10-311] analyzing module spike_sprite_rom
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/hvsync_generator.v" into library work
+INFO: [VRFC 10-311] analyzing module hvsync_generator
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/player.v" into library work
+INFO: [VRFC 10-311] analyzing module player
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/world.v" into library work
+INFO: [VRFC 10-311] analyzing module world
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/nelso/Documents/Programs/EE354TromboneChamp/actual_project/vga_demo.v" into library work
+INFO: [VRFC 10-311] analyzing module vga_demo

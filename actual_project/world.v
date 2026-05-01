@@ -1,7 +1,10 @@
 module world(
+    input  [9:0] playerX,
+    input  [9:0] playerY,
     input  [9:0] nextX,
     input  [9:0] nextY,
     input clk,
+    input rst,
 
     output collide_left,
     output collide_right,
@@ -9,6 +12,7 @@ module world(
     output collide_bottom,
     output hit_spike,
     output collect_berry,
+    output all_berries_collected,
 
     // NEW DEBUG OUTPUTS
     output [9:0] left_o,
@@ -21,8 +25,6 @@ module world(
     input  [4:0] tile_y,
     output [1:0] tile_out
 );
-
-reg berry = 1;
 
 //////////////////////////////////////////////////////////////
 // PARAMETERS
@@ -42,24 +44,78 @@ localparam TILE_SOLID = 2'b01;
 localparam SPIKE = 2'b10;
 localparam STRAWBERRY = 2'b11;
 
+localparam BERRY_COUNT = 5;
+localparam [5:0] BERRY0_X = 6'd5;
+localparam [4:0] BERRY0_Y = WORLD_H-6;
+localparam [5:0] BERRY1_X = 6'd18;
+localparam [4:0] BERRY1_Y = WORLD_H-14;
+localparam [5:0] BERRY2_X = 6'd30;
+localparam [4:0] BERRY2_Y = WORLD_H-17;
+localparam [5:0] BERRY3_X = 6'd10;
+localparam [4:0] BERRY3_Y = WORLD_H-10;
+localparam [5:0] BERRY4_X = 6'd24;
+localparam [4:0] BERRY4_Y = WORLD_H-20;
+
+localparam BERRIES_READY = 1'b0;
+localparam BERRIES_UPDATE = 1'b1;
+
+reg berry_state;
+reg [BERRY_COUNT-1:0] berries_present;
+wire [BERRY_COUNT-1:0] touched_berries;
+reg collect_pulse;
+
+assign collect_berry = collect_pulse;
+assign all_berries_collected = (berries_present == {BERRY_COUNT{1'b0}});
+
+initial begin
+    berry_state = BERRIES_READY;
+    berries_present = {BERRY_COUNT{1'b1}};
+    collect_pulse = 1'b0;
+end
 
 //////////////////////////////////////////////////////////////
 // WORLD MAP
 //////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////
+// PIXEL to TILE CONVERSION
+//////////////////////////////////////////////////////////////
+wire [9:0] player_left   = playerX >> 4;
+wire [9:0] player_right  = (playerX + PLAYER_W - 1) >> 4;
+wire [9:0] player_top    = playerY >> 4;
+wire [9:0] player_bottom = (playerY + PLAYER_H - 1) >> 4;
+
+wire [9:0] left   = nextX >> 4;
+wire [9:0] right  = (nextX + PLAYER_W - 1) >> 4;
+wire [9:0] top    = nextY >> 4;
+wire [9:0] bottom = (nextY + PLAYER_H - 1) >> 4;
 
 assign left_o   = left;
 assign right_o  = right;
 assign top_o    = top;
 assign bottom_o = bottom;
 
+function berry_present_at;
+    input [5:0] tx;
+    input [4:0] ty;
+    begin
+        berry_present_at =
+            (berries_present[0] && tx >= BERRY0_X && tx <= BERRY0_X + 1 && ty >= BERRY0_Y && ty <= BERRY0_Y + 1) ||
+            (berries_present[1] && tx >= BERRY1_X && tx <= BERRY1_X + 1 && ty >= BERRY1_Y && ty <= BERRY1_Y + 1) ||
+            (berries_present[2] && tx >= BERRY2_X && tx <= BERRY2_X + 1 && ty >= BERRY2_Y && ty <= BERRY2_Y + 1) ||
+            (berries_present[3] && tx >= BERRY3_X && tx <= BERRY3_X + 1 && ty >= BERRY3_Y && ty <= BERRY3_Y + 1) ||
+            (berries_present[4] && tx >= BERRY4_X && tx <= BERRY4_X + 1 && ty >= BERRY4_Y && ty <= BERRY4_Y + 1);
+    end
+endfunction
 
-    function [1:0] tile_at_tile;
+function [1:0] tile_at_tile;
     input [5:0] tx;
     input [4:0] ty;
     begin
         if (tx >= WORLD_W || ty >= WORLD_H) begin
             tile_at_tile = TILE_SOLID;
+        end else if (berry_present_at(tx, ty)) begin
+            tile_at_tile = STRAWBERRY;
         end else if (ty == WORLD_H-1) begin
             tile_at_tile = (tx < 16 || tx >= 20) ? TILE_SOLID : TILE_EMPTY;
         end else if (ty == WORLD_H-2) begin
@@ -74,10 +130,7 @@ assign bottom_o = bottom;
         end else if (ty == WORLD_H-5) begin
             tile_at_tile = (tx >= 26) ? TILE_SOLID : TILE_EMPTY;
         end else if (ty == WORLD_H-6) begin
-            if (tx == 5)
-                tile_at_tile = STRAWBERRY;
-            else
-                tile_at_tile = ((tx >= 16 && tx < 20) || tx >= 26) ? TILE_SOLID : TILE_EMPTY;
+            tile_at_tile = ((tx >= 16 && tx < 20) || tx >= 26) ? TILE_SOLID : TILE_EMPTY;
         end else if (ty == WORLD_H-7) begin
             tile_at_tile = (tx >= 26) ? TILE_SOLID : TILE_EMPTY;
         end else if (ty == WORLD_H-9) begin
@@ -133,14 +186,6 @@ function is_berry;
 endfunction
 
 //////////////////////////////////////////////////////////////
-// PIXEL to TILE CONVERSION (for player debug)
-//////////////////////////////////////////////////////////////
-wire [9:0] left   = nextX >> 4;
-wire [9:0] right  = (nextX + PLAYER_W - 1) >> 4;
-wire [9:0] top    = nextY >> 4;
-wire [9:0] bottom = (nextY + PLAYER_H - 1) >> 4;
-
-//////////////////////////////////////////////////////////////
 // DIRECTIONAL COLLISION PROBES
 //////////////////////////////////////////////////////////////
 wire [9:0] left_probe_col   = (nextX - 1) >> 4;
@@ -186,22 +231,66 @@ assign collide_top =
     is_solid(probe_col_b, top);
 
 assign hit_spike =
-    is_spike(left, bottom) ||
-    is_spike(right, bottom) ||
-    is_spike(left, top) ||
-    is_spike(right, top);
+    is_spike(player_left[5:0], player_bottom[4:0]) ||
+    is_spike(player_right[5:0], player_bottom[4:0]) ||
+    is_spike(player_left[5:0], player_top[4:0]) ||
+    is_spike(player_right[5:0], player_top[4:0]) ||
+    is_spike(left[5:0], bottom[4:0]) ||
+    is_spike(right[5:0], bottom[4:0]) ||
+    is_spike(left[5:0], top[4:0]) ||
+    is_spike(right[5:0], top[4:0]);
 
-assign collect_berry =
-    is_berry(left, bottom) ||
-    is_berry(right, bottom) ||
-    is_berry(left, top) ||
-    is_berry(right, top);
-    
-//  always @(posedge clk) begin
-//      if (collect_berry) begin
-        
-//      end
-//  end
+assign touched_berries =
+    berry_mask(player_left[5:0], player_bottom[4:0]) |
+    berry_mask(player_right[5:0], player_bottom[4:0]) |
+    berry_mask(player_left[5:0], player_top[4:0]) |
+    berry_mask(player_right[5:0], player_top[4:0]) |
+    berry_mask(left[5:0], bottom[4:0]) |
+    berry_mask(right[5:0], bottom[4:0]) |
+    berry_mask(left[5:0], top[4:0]) |
+    berry_mask(right[5:0], top[4:0]);
+
+function [BERRY_COUNT-1:0] berry_mask;
+    input [5:0] tx;
+    input [4:0] ty;
+    begin
+        berry_mask = {BERRY_COUNT{1'b0}};
+        if (tx >= BERRY0_X && tx <= BERRY0_X + 1 && ty >= BERRY0_Y && ty <= BERRY0_Y + 1)
+            berry_mask[0] = 1'b1;
+        if (tx >= BERRY1_X && tx <= BERRY1_X + 1 && ty >= BERRY1_Y && ty <= BERRY1_Y + 1)
+            berry_mask[1] = 1'b1;
+        if (tx >= BERRY2_X && tx <= BERRY2_X + 1 && ty >= BERRY2_Y && ty <= BERRY2_Y + 1)
+            berry_mask[2] = 1'b1;
+        if (tx >= BERRY3_X && tx <= BERRY3_X + 1 && ty >= BERRY3_Y && ty <= BERRY3_Y + 1)
+            berry_mask[3] = 1'b1;
+        if (tx >= BERRY4_X && tx <= BERRY4_X + 1 && ty >= BERRY4_Y && ty <= BERRY4_Y + 1)
+            berry_mask[4] = 1'b1;
+    end
+endfunction
+
+always @(posedge clk) begin
+    if (rst || hit_spike) begin
+        berry_state <= BERRIES_READY;
+        berries_present <= {BERRY_COUNT{1'b1}};
+        collect_pulse <= 1'b0;
+    end else begin
+        collect_pulse <= 1'b0;
+
+        case (berry_state)
+            BERRIES_READY: begin
+                if (|(berries_present & touched_berries))
+                    berry_state <= BERRIES_UPDATE;
+            end
+
+            BERRIES_UPDATE: begin
+                berries_present <= berries_present & ~touched_berries;
+                collect_pulse <= |(berries_present & touched_berries);
+                berry_state <= BERRIES_READY;
+            end
+        endcase
+    end
+end
+
 //////////////////////////////////////////////////////////////
 // TILE OUTPUT FOR VGA
 //////////////////////////////////////////////////////////////

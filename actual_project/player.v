@@ -59,6 +59,20 @@ reg grounded;
 reg facing_left_reg;
 assign facing_left = facing_left_reg;
 
+initial begin
+    state = READ;
+    x = 100;
+    y = 100;
+    vx = 0;
+    vy = 0;
+    nextXreg = 100;
+    nextYreg = 100;
+    dashflag = 0;
+    jumpflag = 0;
+    jump_req = 0;
+    facing_left_reg = 0;
+end
+
 //////////////////////////////////////////////////////////////
 // FSM
 //////////////////////////////////////////////////////////////
@@ -66,7 +80,7 @@ always @(posedge clk) begin
     if (rst || hit_spike) begin
         state <= READ;
 
-        x <= 100;
+        x <= 50;
         y <= 100;
 
         vx <= 0;
